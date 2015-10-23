@@ -25,10 +25,7 @@ using namespace std;
 Exp* parse(map<string, Exp*>* keywords, string input){
 
     string line_inside_parse = input;
-    string new_line_after_parse_extraction;
     string expression;
-    string terminal_in_sequence_as_string;
-    string key_word_inside_parse_as_string;
     int count = 0;
 
     ///this if is where we start looking for choices
@@ -61,7 +58,6 @@ Exp* parse(map<string, Exp*>* keywords, string input){
 
                 }
 
-
         }
 
     ///this else if is where we start looking for sequences
@@ -92,18 +88,12 @@ Exp* parse(map<string, Exp*>* keywords, string input){
 
 //////////This else if is where we look for keywords
       else if(line_inside_parse.find('<') != string::npos){
-          //cout<<"\n\nline inside keyword before extraction: " << line_inside_parse << endl;
               string found_keyword=  line_inside_parse.substr(1, line_inside_parse.size()-1);
 
               pos = line_inside_parse.find('<');
               found_keyword.erase(found_keyword.size()-1, 1);
 
-
-
-
               Keyword* ret = new Keyword(keywords, found_keyword);
-
-              //cout<<"\nline after keyword extracted down at end before return: "<< found_keyword << endl;
 
               return ret;
           }
@@ -111,16 +101,11 @@ Exp* parse(map<string, Exp*>* keywords, string input){
  ///if the input gets down here it must be a terminal
 
           else{
-
                 expression = line_inside_parse;
-                //cout<<"expression at end of loop so must be terminal: " << expression << endl;
                 Terminal* ret = new Terminal(expression);
 
-            return ret;
-
+                return ret;
           }
-
-
   }
 
 int main(int argc, char* argv[]){
@@ -140,8 +125,6 @@ int main(int argc, char* argv[]){
 
         input_file_name = *(argv + 1);
         break;
-
-
     }
     /*
     open file and get length of file
@@ -154,8 +137,6 @@ int main(int argc, char* argv[]){
 
 
     string text_file_line;
-    string text_file_expression;
-    string text_file_expressions_after_extraction;
     vector<string> stored_lines_vector;
     vector<string> stored_keywords_vector;
     string keyword_in_text;
@@ -203,7 +184,6 @@ int main(int argc, char* argv[]){
         exit(EXIT_SUCCESS);
     }
   srand(time(0));
-
 
   // Create map of keywords to expressions
 
