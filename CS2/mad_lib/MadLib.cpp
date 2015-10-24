@@ -133,7 +133,7 @@ int main(int argc, char* argv[]){
     file.seekg(0, file.end);
     int length = file.tellg();
     file.seekg(0, file.beg);
-    cout<<"length: " << length << "\n";
+
     string text_file_line;
     vector<string> stored_lines_vector;
     vector<string> stored_keywords_vector;
