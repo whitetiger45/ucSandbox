@@ -113,9 +113,10 @@ int main(int argc, char* argv[]){
 //https://github.uc.edu/CS2-Fall2014/ExamplesSolutions/blob/master/Solutions/02/printstats_HW2.cpp
 //http://cs.dvc.edu/HowTo_Cparse.html
     int input = 0;
-    char* input_file_name;
-    //bool invalid_input = true;
 
+    const char* input_file_name = "textDocs/simple.txt";
+    //bool invalid_input = true;
+/*
     while(input != -1){
          if (argc != 2){
                   cout<<"\nYou must include a text document filename on the command text_file_line!\n";
@@ -126,16 +127,13 @@ int main(int argc, char* argv[]){
         input_file_name = *(argv + 1);
         break;
     }
-    /*
-    open file and get length of file
-    */
+*/
     ifstream file;
     file.open(input_file_name);
     file.seekg(0, file.end);
     int length = file.tellg();
     file.seekg(0, file.beg);
-
-
+    cout<<"length: " << length << "\n";
     string text_file_line;
     vector<string> stored_lines_vector;
     vector<string> stored_keywords_vector;
@@ -160,12 +158,10 @@ int main(int argc, char* argv[]){
             if(pos != string::npos){
                   keyword_in_text = text_file_line.substr(0, pos);
                   stored_keywords_vector.push_back(keyword_in_text);//keywords vector
-                  //cout<<"keyword: " << keyword_in_text << endl;
+
                   stored_lines_vector.push_back(text_file_line.substr(pos + 1));//lines vector after colon extracted
 
                   keyword_map[keyword_in_text] = parse(&keyword_map, stored_lines_vector[loop_count]);
-                  //cout<< endl;
-
             }
 
             loop_count++;
@@ -212,3 +208,4 @@ int main(int argc, char* argv[]){
 
   // Return all memory back to OS.
 }
+
