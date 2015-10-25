@@ -30,7 +30,8 @@ Exp* parse(map<string, Exp*>* keywords, string input){
 
     ///this if is where we start looking for choices
       size_t pos = line_inside_parse.find('|');
-      if(line_inside_parse.find('|') != string::npos){
+      if(line_inside_parse.find('|') != string::npos)
+      {
 
                 Choice* ret = new Choice();
                 expression = line_inside_parse.substr(0, pos);
@@ -41,7 +42,8 @@ Exp* parse(map<string, Exp*>* keywords, string input){
                 if(line_inside_parse.size() == 0)
                       return ret;
                 pos = line_inside_parse.find('|');
-              while(pos != string::npos){
+              while(pos != string::npos)
+              {
                       pos = line_inside_parse.find('|');
                       expression = line_inside_parse.substr(0, pos);
                       pos = line_inside_parse.find('|');
@@ -55,9 +57,7 @@ Exp* parse(map<string, Exp*>* keywords, string input){
                         return ret;
                       }
                       ret->addExpression(parse(keywords, expression));
-
                 }
-
         }
 
     ///this else if is where we start looking for sequences
@@ -68,7 +68,6 @@ Exp* parse(map<string, Exp*>* keywords, string input){
               Sequence* ret = new Sequence();
               int count= 0;
                     while(pos != string::npos){
-
 
                           expression = line_inside_parse.substr(0, pos);
                           line_inside_parse= line_inside_parse.substr(pos + 1);
@@ -152,8 +151,6 @@ int main(int argc, char* argv[]){
 
               getline(file, text_file_line);
               size_t pos= text_file_line.find(':');
-              //int count = 0;
-
 
             if(pos != string::npos){
                   keyword_in_text = text_file_line.substr(0, pos);
@@ -171,14 +168,6 @@ int main(int argc, char* argv[]){
 
     }
 
-    for(it = keyword_map.begin(); it != keyword_map.end(); ++it){
-        //cout<<"[keyword] " << it->first << " => " << (it->second)->getString() << endl;
-    }
-
-    if(length <= 0){
-        cout<<"Invalid text document!\nFormat: <text document>.txt\n";
-        exit(EXIT_SUCCESS);
-    }
   srand(time(0));
 
   // Create map of keywords to expressions
