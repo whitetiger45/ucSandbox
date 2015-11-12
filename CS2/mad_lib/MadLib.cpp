@@ -1,22 +1,24 @@
 /*    @file MadLib.cpp
-      @author <Bryan Kanu>
-      @date <10/21/14>
+      @author: Bryan Kanu
+      @CS2 Assignment
+      @Dr. Talaga
+      @date 10/21/14
 
       @description This program accepts a grammar instance text file and
       prints out a random instance from that grammar.
 */
 
+#include <algorithm>
+#include <cstring>
 #include <iostream>
 #include <cstdlib>
+#include <fstream>
+#include <iterator>
 #include <map>
+#include <sstream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <fstream>
-#include <cstring>
-#include <sstream>
-#include <iterator>
-#include <algorithm>
 
 #include "expression.h"
 
@@ -134,7 +136,6 @@ int main(int argc, char* argv[])
     ifstream file;
     file.open(input_file_name);
     file.seekg(0, file.end);
-    //int length = file.tellg();
     file.seekg(0, file.beg);
 
     string text_file_line;
@@ -193,10 +194,15 @@ int main(int argc, char* argv[])
 
     // Get start expression and print out sentence!
 
-    Exp* s1 = keyword_map["start"];
+    Exp* myMadlib = keyword_map["start"];
 
-    cout << s1->getString() << endl;
+    cout << myMadlib->getString() << endl;
 
   // Return all memory back to OS.
+    delete action;
+    delete k1;
+    delete v1;
+    delete v2; 
+    delete v3;
 }
 
