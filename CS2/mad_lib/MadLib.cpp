@@ -12,9 +12,11 @@
 #include <cstring>
 #include <iostream>
 #include <cstdlib>
+#include <cctype>
 #include <fstream>
 #include <iterator>
 #include <map>
+#include <regex>
 #include <sstream>
 #include <stdio.h>
 #include <stdlib.h>
@@ -27,11 +29,19 @@ using namespace std;
 Exp* parse(map<string, Exp*>* keywords, string input)
 {
     string line_inside_parse = input;
-    string expression;
+    string expression, expression2;
     int count = 0;
 
     ///this if is where we start looking for choices
     size_t pos = line_inside_parse.find('|');
+    std::smatch sm_keyWord;
+    std::cmatch cm, p_keyWord;
+    std::regex barRegEx("(.*)");
+    std::regex keyWordParseRegEx("<([a-z]+)>.*");
+    if( std::regex_match (line_inside_parse.c_str(),cm,barRegEx) && (isalpha(cm.str(1)[0])) && !iscntrl(cm.str(1)[0]))
+    {
+        //cout << "Bar Word: " << cm.str(1) << "\n";
+    }
     if(line_inside_parse.find('|') != string::npos)
     {
         Choice* ret = new Choice();
@@ -56,9 +66,12 @@ Exp* parse(map<string, Exp*>* keywords, string input)
             else
             {
                 expression = line_inside_parse.substr(0, string::npos);
+                expression2 = cm.str(1);
+                //cout << "\n\nPARSE '|' DEBUG inside else before return: " << expression;
                 ret->addExpression(parse(keywords, expression));
                 return ret;
             }
+            //cout << "\n\nPARSE '|' DEBUG inside while: " << line_inside_parse;
             ret->addExpression(parse(keywords, expression));
         }
     }
@@ -77,11 +90,12 @@ Exp* parse(map<string, Exp*>* keywords, string input)
 
             count++;
             pos = line_inside_parse.find(' ');
-
+            //cout << "\n\nPARSE ' ' DEBUG inside while: " << line_inside_parse;
             ret->addExpression(parse(keywords, expression));
         }
         if(pos == string::npos)
         {
+            //cout << "\n\nPARSE ' ' DEBUG Inside if before ret: " << line_inside_parse;
             ret->addExpression(parse(keywords, line_inside_parse));
             return ret;
         }
@@ -92,11 +106,25 @@ Exp* parse(map<string, Exp*>* keywords, string input)
     else if(line_inside_parse.find('<') != string::npos)
     {
         string found_keyword=  line_inside_parse.substr(1, line_inside_parse.size()-1);
-
+        //cout << "\n\nPARSE '<' DEBUG: " << line_inside_parse;
         pos = line_inside_parse.find('<');
         found_keyword.erase(found_keyword.size()-1, 1);
+//        cout << "\nFOUND KEYWORD: " << found_keyword << "\n*****\n";
+        //Keyword* ret = new Keyword(keywords, found_keyword);//original add new keyword in parse
+    Keyword* ret;
+    if( std::regex_match (cm.str(1),sm_keyWord, keyWordParseRegEx))
+    {
+        //cout << "*****\nKeyword in parse: (0)" << sm_keyWord[0] << "\n";
+        if( std::regex_match (cm.str(1).c_str(),p_keyWord, keyWordParseRegEx))
+        {
+           // cout << "\nKeyword in parse, nested if: " << p_keyWord.str(0) << "\n*******\n";
+            string kw = p_keyWord.str(0);
+            //cout << "\nKeyword in parse, nested if: " << kw.substr(1, kw.size()-2) << "\n*******\n";
+            kw = kw.substr(1, kw.size()-2);
+            ret = new Keyword(keywords, kw);
+        }
+    }
 
-        Keyword* ret = new Keyword(keywords, found_keyword);
 
         return ret;
     }
@@ -106,6 +134,7 @@ Exp* parse(map<string, Exp*>* keywords, string input)
     else
     {
         expression = line_inside_parse;
+        //cout << "\nFOUND TERMINAL: " << expression << "\n*****\n";
         Terminal* ret = new Terminal(expression);
 
         return ret;
@@ -149,6 +178,8 @@ int main(int argc, char* argv[])
 
     //http://www.cplusplus.com/forum/beginner/70805/
     //http://stackoverflow.com/questions/16074980/parse-a-file-in-c-and-ignore-some-characters
+    std::cmatch cm;
+    std::regex keyWordRegEx("^([a-z]+):(.*)");
 
     if(file.is_open())
     {
@@ -156,22 +187,30 @@ int main(int argc, char* argv[])
         {
             getline(file, text_file_line);
             size_t pos= text_file_line.find(':');
+            
+           //if( std::regex_match (text_file_line.c_str(),cm,keyWordRegEx))
+             //   cout << "KeyWord: " << cm.str(1) << "\n";
 
             if(pos != string::npos)
             {
-                keyword_in_text = text_file_line.substr(0, pos);
-                stored_keywords_vector.push_back(keyword_in_text);//keywords vector
+                //keyword_in_text = text_file_line.substr(0, pos);
+                if( std::regex_match (text_file_line.c_str(),cm,keyWordRegEx))
+                {
+                    keyword_in_text = cm.str(1);
+                    stored_keywords_vector.push_back(keyword_in_text);//keywords vector
 
-                stored_lines_vector.push_back(text_file_line.substr(pos + 1));//lines vector after colon extracted
+                    stored_lines_vector.push_back(cm.str(2));//lines vector after colon extracted
 
-                keyword_map[keyword_in_text] = parse(&keyword_map, stored_lines_vector[loop_count]);
+                    keyword_map[keyword_in_text] = parse(&keyword_map, stored_lines_vector[loop_count]);
+                }
+
             }
             loop_count++;
         }
         file.close();
     }
 
-    srand(time(0));
+    srand(time(NULL));
 
     // Create map of keywords to expressions
 
@@ -195,8 +234,8 @@ int main(int argc, char* argv[])
     // Get start expression and print out sentence!
 
     Exp* myMadlib = keyword_map["start"];
-
     cout << myMadlib->getString() << endl;
+
 
   // Return all memory back to OS.
     delete action;
