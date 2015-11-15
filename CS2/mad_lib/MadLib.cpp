@@ -31,7 +31,6 @@ Exp* parse(map<string, Exp*>* keywords, string input)
     string line_inside_parse = input;
     string expression, expression2;
     int count = 0;
-
     ///this if is where we start looking for choices
     size_t pos = line_inside_parse.find('|');
     std::smatch sm_keyWord;
@@ -75,9 +74,7 @@ Exp* parse(map<string, Exp*>* keywords, string input)
             ret->addExpression(parse(keywords, expression));
         }
     }
-
     ///this else if is where we start looking for sequences
-
     else if(line_inside_parse.find(' ') != string::npos)
     {
         pos = line_inside_parse.find(' ');
@@ -101,7 +98,6 @@ Exp* parse(map<string, Exp*>* keywords, string input)
         }
         return ret;
     }
-
     //////////This else if is where we look for keywords
     else if(line_inside_parse.find('<') != string::npos)
     {
@@ -109,7 +105,6 @@ Exp* parse(map<string, Exp*>* keywords, string input)
         //cout << "\n\nPARSE '<' DEBUG: " << line_inside_parse;
         pos = line_inside_parse.find('<');
         found_keyword.erase(found_keyword.size()-1, 1);
-//        cout << "\nFOUND KEYWORD: " << found_keyword << "\n*****\n";
         //Keyword* ret = new Keyword(keywords, found_keyword);//original add new keyword in parse
     Keyword* ret;
     if( std::regex_match (cm.str(1),sm_keyWord, keyWordParseRegEx))
@@ -124,17 +119,13 @@ Exp* parse(map<string, Exp*>* keywords, string input)
             ret = new Keyword(keywords, kw);
         }
     }
-
-
         return ret;
     }
-
     ///if the input gets down here it must be a terminal
-
     else
     {
         expression = line_inside_parse;
-        //cout << "\nFOUND TERMINAL: " << expression << "\n*****\n";
+        //cout << "\n******\nFOUND TERMINAL: " << cm.str(0) << "\n******\n";
         Terminal* ret = new Terminal(expression);
 
         return ret;
@@ -189,7 +180,6 @@ int main(int argc, char* argv[])
             size_t pos= text_file_line.find(':');
             
            //if( std::regex_match (text_file_line.c_str(),cm,keyWordRegEx))
-             //   cout << "KeyWord: " << cm.str(1) << "\n";
 
             if(pos != string::npos)
             {
