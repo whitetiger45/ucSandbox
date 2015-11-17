@@ -44,6 +44,7 @@ Exp* parse(map<string, Exp*>* keywords, string input)
     if(line_inside_parse.find('|') != string::npos)
     {
         Choice* ret = new Choice();
+
         expression = line_inside_parse.substr(0, pos);
         line_inside_parse = line_inside_parse.substr(pos + 1);
 
@@ -139,7 +140,7 @@ int main(int argc, char* argv[])
 //http://cs.dvc.edu/HowTo_Cparse.html
     int input = 0;
 
-    const char* input_file_name = "textDocs/simple.txt";
+    const char* input_file_name = "textDocs/late.txt";
     //bool invalid_input = true;
 /*
     while(input != -1){
@@ -171,6 +172,7 @@ int main(int argc, char* argv[])
     //http://stackoverflow.com/questions/16074980/parse-a-file-in-c-and-ignore-some-characters
     std::cmatch cm;
     std::regex keyWordRegEx("^([a-z]+):(.*)");
+    auto chop = [](string restOfLine)->string{string ret; size_t pos = restOfLine.find("|"); if(pos != string::npos)cout <<"\nWord: " << restOfLine.substr(0, pos) << "\n"; ret= restOfLine.substr(pos+1);return ret;};
 
     if(file.is_open())
     {
@@ -195,6 +197,16 @@ int main(int argc, char* argv[])
                 }
 
             }
+        string line = cm.str(2);
+        while(line.find("|"))
+        {
+            line = chop(line);
+            if(line.find("|") == string::npos)
+            {
+                break;
+            }
+        }
+
             loop_count++;
         }
         file.close();
