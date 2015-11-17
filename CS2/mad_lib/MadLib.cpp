@@ -140,7 +140,7 @@ int main(int argc, char* argv[])
 //http://cs.dvc.edu/HowTo_Cparse.html
     int input = 0;
 
-    const char* input_file_name = "textDocs/late.txt";
+    const char* input_file_name = "textDocs/simple.txt";
     //bool invalid_input = true;
 /*
     while(input != -1){
@@ -172,7 +172,11 @@ int main(int argc, char* argv[])
     //http://stackoverflow.com/questions/16074980/parse-a-file-in-c-and-ignore-some-characters
     std::cmatch cm;
     std::regex keyWordRegEx("^([a-z]+):(.*)");
-    auto chop = [](string restOfLine)->string{string ret; size_t pos = restOfLine.find("|"); if(pos != string::npos)cout <<"\nWord: " << restOfLine.substr(0, pos) << "\n"; ret= restOfLine.substr(pos+1);return ret;};
+    auto chop = [](string restOfLine)->string{
+                                                string ret; size_t pos = restOfLine.find("|"); if(pos != string::npos)
+                                                cout <<"\nWord: " << restOfLine.substr(0, pos) << "\n"; 
+                                                ret= restOfLine.substr(pos+1);return ret;
+                                            };
 
     if(file.is_open())
     {
