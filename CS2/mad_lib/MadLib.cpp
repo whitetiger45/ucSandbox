@@ -206,7 +206,6 @@ int main(int argc, char* argv[])
                 break;
             }
         }
-
             loop_count++;
         }
         file.close();
