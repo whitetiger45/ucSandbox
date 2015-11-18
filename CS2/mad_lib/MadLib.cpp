@@ -140,7 +140,7 @@ int main(int argc, char* argv[])
 //http://cs.dvc.edu/HowTo_Cparse.html
     int input = 0;
 
-    const char* input_file_name = "textDocs/simple.txt";
+    const char* input_file_name = "textDocs/late.txt";
     //bool invalid_input = true;
 /*
     while(input != -1){
@@ -171,12 +171,38 @@ int main(int argc, char* argv[])
     //http://www.cplusplus.com/forum/beginner/70805/
     //http://stackoverflow.com/questions/16074980/parse-a-file-in-c-and-ignore-some-characters
     std::cmatch cm;
+    std::smatch mr, m2;
     std::regex keyWordRegEx("^([a-z]+):(.*)");
-    auto chop = [](string restOfLine)->string{
-                                                string ret; size_t pos = restOfLine.find("|"); if(pos != string::npos)
-                                                cout <<"\nWord: " << restOfLine.substr(0, pos) << "\n"; 
-                                                ret= restOfLine.substr(pos+1);return ret;
-                                            };
+    std::regex regEx("<([a-z]+)>(.*)");
+    std::regex r2("([A-Z?a-z]+ ?[a-z]* ?[a-z]*)(.*)");
+    bool more = true;
+    auto chop3 = [&m2, &r2](string in)->string{string ret; if(std::regex_match(in, m2, r2)){cout << "\nterminal: "<< m2[1]; 
+                                                                                                        ret = m2[2];                                                                                                                                                                                                            
+                                                                                                        if(isspace(ret[0]))
+                                                                                                            ret = ret.substr(1, ret.size());
+                                                                                                        }
+                                                                                                        cout <<"\nrest of line: " <<  ret << "\n" ; return ret;};
+    auto chop4 = [&regEx, &mr](string rol)->string{string ret; if(std::regex_match(rol, mr, regEx)){cout << "\nkeyword: "<< mr[1]<< "\nrest: " << mr[2] << "\n"; 
+                                                                                                    ret = mr[2]; 
+                                                                                                    if(isspace(ret[0]))
+                                                                                                        ret = ret.substr(1, ret.size());
+                                                                                                    }return ret;};
+
+    auto chop = [](string restOfLine)->string{string ret; size_t pos = restOfLine.find("|"); if(pos != string::npos)cout <<"\nWord: " << restOfLine.substr(0, pos) << "\n"; ret= restOfLine.substr(pos+1);return ret;};
+    
+    auto chop2 = [&regEx, &mr, &more, &chop3, &chop4](string rol)->string{string ret; if(std::regex_match(rol, mr, regEx)){more = true;cout << "\nkeyword: "<< mr[1]<< "\nrest: " << mr[2] << "\n"; 
+                                                                                                    ret = mr[2]; 
+                                                                                                    if(isspace(ret[0]))
+                                                                                                        ret = ret.substr(1, ret.size());
+                                                                                                    while(ret[0] == '<')
+                                                                                                        ret = chop4(ret);
+                                                                                                    ret = chop3(ret);
+                                                                                                    }
+                                                                        else
+                                                                        {
+                                                                            more = false; 
+                                                                        }
+                                                                        return ret;};
 
     if(file.is_open())
     {
@@ -210,6 +236,8 @@ int main(int argc, char* argv[])
                 break;
             }
         }
+        while(more)
+            line = chop2(line);
             loop_count++;
         }
         file.close();
