@@ -39,7 +39,7 @@ Exp* parse(map<string, Exp*>* keywords, string input)
     std::regex keyWordParseRegEx("<([a-z]+)>.*");
     if( std::regex_match (line_inside_parse.c_str(),cm,barRegEx) && (isalpha(cm.str(1)[0])) && !iscntrl(cm.str(1)[0]))
     {
-        //cout << "Bar Word: " << cm.str(1) << "\n";
+        cout << "Bar Word: " << cm.str(1) << "\n";
     }
     if(line_inside_parse.find('|') != string::npos)
     {
@@ -140,7 +140,7 @@ int main(int argc, char* argv[])
 //http://cs.dvc.edu/HowTo_Cparse.html
     int input = 0;
 
-    const char* input_file_name = "textDocs/late.txt";
+    const char* input_file_name = "textDocs/mytext.txt";
     //bool invalid_input = true;
 /*
     while(input != -1){
@@ -172,10 +172,32 @@ int main(int argc, char* argv[])
     //http://stackoverflow.com/questions/16074980/parse-a-file-in-c-and-ignore-some-characters
     std::cmatch cm;
     std::regex keyWordRegEx("^([a-z]+):(.*)");
-    auto chop = [](string restOfLine)->string{
+    auto chopBar = [](string restOfLine)->string{
                                                 string ret; size_t pos = restOfLine.find("|"); if(pos != string::npos)
-                                                cout <<"\nWord: " << restOfLine.substr(0, pos) << "\n"; 
+                                                cout <<"\nBar Line: " << restOfLine.substr(0, pos) << "\n"; 
                                                 ret= restOfLine.substr(pos+1);return ret;
+                                            };
+    auto chopPunct = [](string restOfLine)->string{
+                                                string ret, temp; cout << "Before Chop: " << restOfLine << "\n";
+                                                size_t pos = restOfLine.find("<");
+                                                if(pos != string::npos)
+                                                {
+                                                    temp = restOfLine.substr(0, pos-1);
+                                                    cout << "Temp: " << temp << "\n";
+                                                    restOfLine = restOfLine.substr(pos);
+                                                    cout << "Rest of Line: " << restOfLine <<"\n";
+                                                    std::smatch m; std::regex regEx("<([a-z]+)>(.*)");
+                                                    if(std::regex_match(restOfLine, m, regEx))
+                                                    {
+                                                        cout <<"\nPunctuation Line1: " << m[0] << "\n";     
+                                                        cout <<"\nPunctuation Line2: " << m[1] << "\n"; 
+                                                        cout <<"\nPunctuation Line3: " << m[2]<< "\n";                      
+                                                        ret= m[2];
+                                                    }
+                                                }
+                                                else
+                                                    return restOfLine;
+                                                return ret;
                                             };
 
     if(file.is_open())
@@ -197,15 +219,25 @@ int main(int argc, char* argv[])
 
                     stored_lines_vector.push_back(cm.str(2));//lines vector after colon extracted
 
-                    keyword_map[keyword_in_text] = parse(&keyword_map, stored_lines_vector[loop_count]);
+                    //keyword_map[keyword_in_text] = parse(&keyword_map, stored_lines_vector[loop_count]);
                 }
 
             }
         string line = cm.str(2);
         while(line.find("|"))
         {
-            line = chop(line);
+            line = chopBar(line);
             if(line.find("|") == string::npos)
+            {
+                break;
+            }
+        }
+        cout << "\nlast line: " << line << "\n";
+        while(line.find("<") != string::npos)
+        {   
+            cout <<"\ninside\n";
+            line = chopPunct(line);
+            if(line.find("<") == string::npos)
             {
                 break;
             }
@@ -238,7 +270,7 @@ int main(int argc, char* argv[])
     // Get start expression and print out sentence!
 
     Exp* myMadlib = keyword_map["start"];
-    cout << myMadlib->getString() << endl;
+    //cout << myMadlib->getString() << endl;
 
 
   // Return all memory back to OS.
