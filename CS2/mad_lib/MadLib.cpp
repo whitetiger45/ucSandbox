@@ -140,7 +140,7 @@ int main(int argc, char* argv[])
 //http://cs.dvc.edu/HowTo_Cparse.html
     int input = 0;
 
-    const char* input_file_name = "textDocs/mytext.txt";
+    const char* input_file_name = "textDocs/simple.txt";
     //bool invalid_input = true;
 /*
     while(input != -1){
@@ -166,10 +166,6 @@ int main(int argc, char* argv[])
     int loop_count = 0;
 
     map<string, Exp*> keyword_map;
-    //map<string, Exp*>::iterator it= keyword_map.begin();
-
-    //http://www.cplusplus.com/forum/beginner/70805/
-    //http://stackoverflow.com/questions/16074980/parse-a-file-in-c-and-ignore-some-characters
     std::cmatch cm;
     std::regex keyWordRegEx("^([a-z]+):(.*)");
     auto chopBar = [](string restOfLine)->string{
@@ -200,18 +196,18 @@ int main(int argc, char* argv[])
                                                 return ret;
                                             };
 
+    //http://www.cplusplus.com/forum/beginner/70805/
+    //http://stackoverflow.com/questions/16074980/parse-a-file-in-c-and-ignore-some-characters
+
     if(file.is_open())
     {
         while(file.good())
         {
             getline(file, text_file_line);
             size_t pos= text_file_line.find(':');
-            
-           //if( std::regex_match (text_file_line.c_str(),cm,keyWordRegEx))
 
             if(pos != string::npos)
             {
-                //keyword_in_text = text_file_line.substr(0, pos);
                 if( std::regex_match (text_file_line.c_str(),cm,keyWordRegEx))
                 {
                     keyword_in_text = cm.str(1);
@@ -219,7 +215,7 @@ int main(int argc, char* argv[])
 
                     stored_lines_vector.push_back(cm.str(2));//lines vector after colon extracted
 
-                    //keyword_map[keyword_in_text] = parse(&keyword_map, stored_lines_vector[loop_count]);
+                    keyword_map[keyword_in_text] = parse(&keyword_map, stored_lines_vector[loop_count]);
                 }
 
             }
@@ -270,7 +266,7 @@ int main(int argc, char* argv[])
     // Get start expression and print out sentence!
 
     Exp* myMadlib = keyword_map["start"];
-    //cout << myMadlib->getString() << endl;
+    cout << myMadlib->getString() << endl;
 
 
   // Return all memory back to OS.
