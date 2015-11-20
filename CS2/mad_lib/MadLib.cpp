@@ -26,12 +26,32 @@
 
 using namespace std;
 
+std::cmatch cm;
+std::regex keyWordRegEx("^([a-z]+):(.*)");
+auto chopBar = [](string& restOfLine){
+                                            string ret; size_t pos = restOfLine.find("|"); 
+                                            if(pos != string::npos)
+                                            {
+                                                cout <<"\nBar Line: " << restOfLine.substr(0, pos) << "\n";
+                                                restOfLine = restOfLine.substr(pos+1);
+                                            }
+                                            else
+                                            {   
+                                                cout <<"\nBar Line End: " << restOfLine << "\n";
+                                                restOfLine= restOfLine.substr(restOfLine.size(), 0);//return ret;
+                                            }
+                                        };
+
+int x = 1;
 Exp* parse(map<string, Exp*>* keywords, string input)
 {
     string line_inside_parse = input;
     string expression, expression2;
     int count = 0;
+    //cout << "\n\n\n\n\n**}**\n(Begin Parse Call #"<< x++ << ")\n**}**\n\n\n";
+    //line_inside_parse = chopBar(line_inside_parse);
     ///this if is where we start looking for choices
+    //chopBar(line_inside_parse);
     size_t pos = line_inside_parse.find('|');
     std::smatch sm_keyWord;
     std::cmatch cm, p_keyWord;
@@ -39,7 +59,7 @@ Exp* parse(map<string, Exp*>* keywords, string input)
     std::regex keyWordParseRegEx("<([a-z]+)>.*");
     if( std::regex_match (line_inside_parse.c_str(),cm,barRegEx) && (isalpha(cm.str(1)[0])) && !iscntrl(cm.str(1)[0]))
     {
-        cout << "Bar Word: " << cm.str(1) << "\n";
+        //cout << "Bar Word: " << cm.str(1) << "\n";
     }
     if(line_inside_parse.find('|') != string::npos)
     {
@@ -67,11 +87,11 @@ Exp* parse(map<string, Exp*>* keywords, string input)
             {
                 expression = line_inside_parse.substr(0, string::npos);
                 expression2 = cm.str(1);
-                //cout << "\n\nPARSE '|' DEBUG inside else before return: " << expression;
+                //cout << "\n***************\n\n***************\n\nPARSE '|' DEBUG inside else before return:\n***************\n\n***************\n" << expression << "\n---------\n";
                 ret->addExpression(parse(keywords, expression));
                 return ret;
             }
-            //cout << "\n\nPARSE '|' DEBUG inside while: " << line_inside_parse;
+            //cout << "\n***************\n\n***************\nPARSE '|' DEBUG inside while: " << expression << "\n***************\n\n***************\n";
             ret->addExpression(parse(keywords, expression));
         }
     }
@@ -140,7 +160,7 @@ int main(int argc, char* argv[])
 //http://cs.dvc.edu/HowTo_Cparse.html
     int input = 0;
 
-    const char* input_file_name = "textDocs/simple.txt";
+    const char* input_file_name = "textDocs/mytext.txt";
     //bool invalid_input = true;
 /*
     while(input != -1){
@@ -166,28 +186,24 @@ int main(int argc, char* argv[])
     int loop_count = 0;
 
     map<string, Exp*> keyword_map;
-    std::cmatch cm;
-    std::regex keyWordRegEx("^([a-z]+):(.*)");
-    auto chopBar = [](string restOfLine)->string{
-                                                string ret; size_t pos = restOfLine.find("|"); if(pos != string::npos)
-                                                cout <<"\nBar Line: " << restOfLine.substr(0, pos) << "\n"; 
-                                                ret= restOfLine.substr(pos+1);return ret;
-                                            };
+    map<string, Exp*> keyM;
+
     auto chopPunct = [](string restOfLine)->string{
-                                                string ret, temp; cout << "Before Chop: " << restOfLine << "\n";
+                                                string ret;// temp; cout << "Before Chop: " << restOfLine << "\n";
                                                 size_t pos = restOfLine.find("<");
                                                 if(pos != string::npos)
                                                 {
-                                                    temp = restOfLine.substr(0, pos-1);
-                                                    cout << "Temp: " << temp << "\n";
+                                                    //temp = restOfLine.substr(0, pos-1);
+                                                    //cout << "Temp: " << temp << "\n";
                                                     restOfLine = restOfLine.substr(pos);
-                                                    cout << "Rest of Line: " << restOfLine <<"\n";
+                                                    cout << "Rest of Line (chopBar): " << restOfLine <<"\n";
                                                     std::smatch m; std::regex regEx("<([a-z]+)>(.*)");
                                                     if(std::regex_match(restOfLine, m, regEx))
                                                     {
-                                                        cout <<"\nPunctuation Line1: " << m[0] << "\n";     
-                                                        cout <<"\nPunctuation Line2: " << m[1] << "\n"; 
-                                                        cout <<"\nPunctuation Line3: " << m[2]<< "\n";                      
+                                                        //cout <<"\nPunctuation Line1: " << m[0] << "\n";     
+                                                        cout <<"\nKeyword: " << m[1] << "\n";
+                                                        string keyWordFound = m[1];
+                                                        //cout <<"\nPunctuation Line3: " << m[2]<< "\n";                      
                                                         ret= m[2];
                                                     }
                                                 }
@@ -215,29 +231,25 @@ int main(int argc, char* argv[])
 
                     stored_lines_vector.push_back(cm.str(2));//lines vector after colon extracted
 
-                    keyword_map[keyword_in_text] = parse(&keyword_map, stored_lines_vector[loop_count]);
+                    //keyword_map[keyword_in_text] = parse(&keyword_map, stored_lines_vector[loop_count]);
                 }
 
             }
         string line = cm.str(2);
-        while(line.find("|"))
+        
+        while(line.size()!=0)
         {
-            line = chopBar(line);
-            if(line.find("|") == string::npos)
-            {
-                break;
-            }
+            chopBar(line);
         }
         cout << "\nlast line: " << line << "\n";
-        while(line.find("<") != string::npos)
+        /*while(line.find("<") != string::npos)
         {   
-            cout <<"\ninside\n";
             line = chopPunct(line);
             if(line.find("<") == string::npos)
             {
                 break;
             }
-        }
+        }*/
             loop_count++;
         }
         file.close();
@@ -266,8 +278,7 @@ int main(int argc, char* argv[])
     // Get start expression and print out sentence!
 
     Exp* myMadlib = keyword_map["start"];
-    cout << myMadlib->getString() << endl;
-
+    //cout << myMadlib->getString() << endl;
 
   // Return all memory back to OS.
     delete action;

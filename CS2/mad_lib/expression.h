@@ -99,10 +99,7 @@ virtual string getString(){
 
 void addExpression(Exp* thing){
 
-	//Exp* some_choice= thing;
-
 	expression_storage_choice.push_back(thing);
-
 }
 
 protected:
