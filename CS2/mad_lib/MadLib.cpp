@@ -188,28 +188,41 @@ int main(int argc, char* argv[])
     map<string, Exp*> keyword_map;
     map<string, Exp*> keyM;
 
-    auto chopPunct = [](string restOfLine)->string{
-                                                string ret;// temp; cout << "Before Chop: " << restOfLine << "\n";
+    auto chopPunct = [](string& restOfLine){
+                                                string ret, temp; //cout << "Before Chop: " << restOfLine << "\n";
                                                 size_t pos = restOfLine.find("<");
                                                 if(pos != string::npos)
                                                 {
-                                                    //temp = restOfLine.substr(0, pos-1);
-                                                    //cout << "Temp: " << temp << "\n";
+                                                    temp = restOfLine.substr(0, pos-1);
+                                                    cout << "Temp: " << temp << "\n";
                                                     restOfLine = restOfLine.substr(pos);
-                                                    cout << "Rest of Line (chopBar): " << restOfLine <<"\n";
+                                                    cout << "Rest of Line: " << restOfLine <<"\n";
                                                     std::smatch m; std::regex regEx("<([a-z]+)>(.*)");
                                                     if(std::regex_match(restOfLine, m, regEx))
                                                     {
                                                         //cout <<"\nPunctuation Line1: " << m[0] << "\n";     
                                                         cout <<"\nKeyword: " << m[1] << "\n";
-                                                        string keyWordFound = m[1];
-                                                        //cout <<"\nPunctuation Line3: " << m[2]<< "\n";                      
-                                                        ret= m[2];
+                                                        //string keyWordFound = m[1];
+                                                        //cout <<"\nRest of line " << m[2]<< "\n";                      
+                                                        restOfLine= m[2];
+                                                    }
+                                                    else
+                                                    {
+                                                        std::smatch m; std::regex regEx("<([a-z]+2)>(.*)");
+                                                        if(std::regex_match(restOfLine, m, regEx))
+                                                        {
+                                                            //cout <<"\nPunctuation Line1: " << m[0] << "\n";     
+                                                            cout <<"\nLast Keyword: " << m[1] << "\n";
+                                                            string lk = m[1];
+                                                            //string keyWordFound = m[1];
+                                                            if(ispunct(restOfLine[restOfLine.size()-1]))
+                                                                restOfLine= restOfLine[restOfLine.size()-1];
+                                                            else
+                                                                restOfLine= restOfLine.substr(restOfLine.size(), 0);
+                                                        }
                                                     }
                                                 }
-                                                else
-                                                    return restOfLine;
-                                                return ret;
+                                                  //return ret;
                                             };
 
     //http://www.cplusplus.com/forum/beginner/70805/
@@ -235,24 +248,23 @@ int main(int argc, char* argv[])
                 }
 
             }
-        string line = cm.str(2);
+            string line = cm.str(2);
         
-        while(line.size()!=0)
-        {
-            chopBar(line);
-        }
-        cout << "\nlast line: " << line << "\n";
-        /*while(line.find("<") != string::npos)
-        {   
-            line = chopPunct(line);
-            if(line.find("<") == string::npos)
+            while(line.size()!=0)
             {
-                break;
+                chopBar(line);
             }
-        }*/
+
             loop_count++;
         }
         file.close();
+        cout << "\nlast line before: " << stored_lines_vector[stored_lines_vector.size()-1] << "\n";
+        string ll = stored_lines_vector[stored_lines_vector.size()-1] ;
+        while(ll.find("<") != string::npos)
+        {   
+           chopPunct(ll);
+        }
+        cout << "\nlast line after chop: " << ll << "\n";
     }
     srand(time(NULL));
 
