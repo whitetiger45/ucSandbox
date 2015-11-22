@@ -200,29 +200,14 @@ int main(int argc, char* argv[])
                                                     cout << "Temp: " << temp << "\n";
                                                     restOfLine = restOfLine.substr(pos);
                                                     cout << "Rest of Line: " << restOfLine <<"\n";
-                                                    std::smatch m; std::regex regEx("<([a-z]+)>(.*)");
+                                                    std::smatch m; std::regex regEx("<([a-z]+|[a-z]+2)>(.*)");
                                                     if(std::regex_match(restOfLine, m, regEx))
                                                     {
                                                         //cout <<"\nPunctuation Line1: " << m[0] << "\n";
                                                         cout <<"\nKeyword: " << m[1] << "\n";
                                                         string keyWordFound = m[1];
-                                                        //cout <<"\nRest of line " << m[2]<< "\n";
+                                                        cout <<"\nRest of line after regex: " << m[2]<< "\n";
                                                         restOfLine= m[2];
-                                                    }
-                                                    else
-                                                    {
-                                                        std::smatch m; std::regex regEx("<([a-z]+2)>(.*)");
-                                                        if(std::regex_match(restOfLine, m, regEx))
-                                                        {
-                                                            //cout <<"\nPunctuation Line1: " << m[0] << "\n";
-                                                            cout <<"\nLast Keyword: " << m[1] << "\n";
-                                                            string lk = m[1];
-                                                            //string keyWordFound = m[1];
-                                                            if(ispunct(restOfLine[restOfLine.size()-1]))
-                                                                restOfLine= restOfLine[restOfLine.size()-1];
-                                                            else
-                                                                restOfLine= restOfLine.substr(restOfLine.size(), 0);
-                                                        }
                                                     }
                                                 }
                                                   //return ret;
@@ -247,7 +232,7 @@ int main(int argc, char* argv[])
 
                     stored_lines_vector.push_back(cm.str(2));//lines vector after colon extracted
 
-                    //keyword_map[keyword_in_text] = parse(&keyword_map, stored_lines_vector[loop_count]);
+                    keyword_map[keyword_in_text] = parse(&keyword_map, stored_lines_vector[loop_count]);
                 }
 
             }
@@ -291,7 +276,7 @@ int main(int argc, char* argv[])
     // Get start expression and print out sentence!
 
     Exp* myMadlib = keyword_map["start"];
-    //cout << myMadlib->getString() << endl;
+    cout << myMadlib->getString() << endl;
 
   // Return all memory back to OS.
     delete action;
