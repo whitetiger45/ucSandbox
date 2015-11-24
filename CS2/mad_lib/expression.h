@@ -7,106 +7,100 @@
 
 using namespace std;
 
-// Fill in all classes here!  Implement here as well.
+class Exp
+{
+public:
 
-class Exp{
+    Exp()
+    {
+    };
 
-public: 
-
-Exp(){};
-
-virtual string getString() = 0;
+    virtual string getString() = 0;
+    typedef vector<Exp*> ChoiceVector;
+    typedef vector<Exp*> SequenceVector;
+    typedef map<string, Exp*> KeyWordMap;
+    typedef map<string, Exp*>* KeyWordMapPtr;
+    typedef map<string, Exp*>::iterator KeyWordMapIter;
 
 };
 /*
 ------------------------------------------------------
 */
-class Terminal : public Exp{
-
-public:	
-
-Terminal(string word){
-
-	this->word = word;
-};	
-
-virtual string getString(){
-	
-	return word;
-}
-
-protected: 
-	
-	string word;
-
-};
-
-/*
----------------------------------------------------------------
-*/
-
-class Sequence : public Exp{
-
-public: 
-
-virtual string getString(){
-	
-	stringstream ss;
-	for(unsigned int i = 0; i < expression_storage_sequence.size(); i++){
-		ss << expression_storage_sequence[i]->getString() << " ";
-	}
-
-	return ss.str();
-}
-
-void addExpression(Exp* thing){
-
-	//Exp* some_thing= thing;
-
-	expression_storage_sequence.push_back(thing);
-
-}
-
-protected:
-
-vector<Exp*> expression_storage_sequence;
-
-
-};
-
-/*
----------------------------------------------------------------
-*/
-
-class Choice : public Exp{
+class Terminal
+    : public Exp
+{
 
 public:
 
-virtual string getString(){
-	
-	stringstream cs;
+    Terminal(string word)
+    {
+        this->word = word;
+    };
 
-	int i = rand() % expression_storage_choice.size();
-	//cout<<"vector length inside choice: " << expression_storage_choice.size() << endl;
-	//for(int i = 0; i < expression_storage_choice.size(); i++)
-		//cout<<"expression: " << i << " : " << expression_storage_choice[i]->getString() << endl;
-
-	cs << expression_storage_choice[i]->getString();
-	
-
-	return cs.str();
-}
-
-void addExpression(Exp* thing){
-
-	expression_storage_choice.push_back(thing);
-}
+    virtual string getString()
+    {
+        return word;
+    }
 
 protected:
 
-vector<Exp*> expression_storage_choice;	
+    string word;
 
+};
 
+/*
+---------------------------------------------------------------
+*/
+
+class Sequence
+    : public Exp
+{
+
+public:
+
+    virtual string getString()
+    {
+        string ret;
+        for(auto ess : expression_storage_sequence)
+            ret+= ess->getString() + " ";
+        return ret;
+    }
+
+    void addExpression(Exp* thing)
+    {
+        expression_storage_sequence.push_back(thing);
+    }
+
+protected:
+
+    SequenceVector expression_storage_sequence;
+};
+
+/*
+---------------------------------------------------------------
+*/
+
+class Choice
+    : public Exp
+{
+
+public:
+
+    virtual string getString()
+    {
+        int i = rand() % expression_storage_choice.size();
+        string ret = expression_storage_choice[i]->getString();
+        return ret;
+    }
+
+    void addExpression(Exp* thing)
+    {
+        expression_storage_choice.push_back(thing);
+    }
+
+protected:
+
+    ChoiceVector expression_storage_choice;
 };
 
 
@@ -115,41 +109,39 @@ vector<Exp*> expression_storage_choice;
 -------------------------------------------------------------------
 */
 
-class Keyword : public Exp{
+class Keyword
+    : public Exp
+{
 
-public: 
+public:
 
-Keyword(map<string, Exp*>* mp, string keyword){
-	the_map_pointer = mp;
-	key_word = keyword;
-}
+    Keyword(KeyWordMapPtr mp, string keyword)
+    {
+        the_map_pointer = mp;
+        key_word = keyword;
+    }
 
-Keyword(multimap<string, Exp*>* mp, string keyword){
-	the_map_pointer2 = mp;
-	key_word = keyword;
-}
+    virtual string getString()
+    {
 
+        KeyWordMapIter kwIT;
+        kwIT = the_map_pointer->find(key_word);
 
-virtual string getString(){
-	
-	map<string, Exp*>::iterator it;
-	it = the_map_pointer->find(key_word);
+        bool found = true;
+        string not_found;
+        not_found = ":(";
 
-	bool found = true;
-	string not_found;
-	not_found = ":(";
-	
-	if(it == the_map_pointer->end()){
-		found = false;
-		return not_found;
-	}
+        if(kwIT == the_map_pointer->end())
+        {
+            found = false;
+            return not_found;
+        }
 
-	else if(found)
-		return (*the_map_pointer)[key_word]->getString();
-}
+        else if(found)
+            return (*the_map_pointer)[key_word]->getString();
+    }
 
 protected:
-	string key_word;
-	map<string, Exp*>* the_map_pointer;
-	multimap<string, Exp*>* the_map_pointer2;
+    string key_word;
+    KeyWordMapPtr the_map_pointer;
 };
