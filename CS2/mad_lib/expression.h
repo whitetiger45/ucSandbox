@@ -7,6 +7,13 @@
 
 using namespace std;
 
+class Exp;
+typedef vector<Exp*> ChoiceVector;
+typedef vector<Exp*> SequenceVector;
+typedef map<string, Exp*> KeyWordMap;
+typedef map<string, Exp*>* KeyWordMapPtr;
+typedef map<string, Exp*>::iterator KeyWordMapIter;
+
 class Exp
 {
 public:
@@ -16,13 +23,8 @@ public:
     };
 
     virtual string getString() = 0;
-    typedef vector<Exp*> ChoiceVector;
-    typedef vector<Exp*> SequenceVector;
-    typedef map<string, Exp*> KeyWordMap;
-    typedef map<string, Exp*>* KeyWordMapPtr;
-    typedef map<string, Exp*>::iterator KeyWordMapIter;
-
 };
+
 /*
 ------------------------------------------------------
 */
