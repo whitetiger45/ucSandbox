@@ -31,7 +31,6 @@ public:
 class Terminal
     : public Exp
 {
-
 public:
 
     Terminal(string word)
@@ -57,7 +56,6 @@ protected:
 class Sequence
     : public Exp
 {
-
 public:
 
     virtual string getString()
@@ -85,7 +83,6 @@ protected:
 class Choice
     : public Exp
 {
-
 public:
 
     virtual string getString()
@@ -114,7 +111,6 @@ protected:
 class Keyword
     : public Exp
 {
-
 public:
 
     Keyword(KeyWordMapPtr mp, string keyword)
